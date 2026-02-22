@@ -1,0 +1,207 @@
+﻿<Window x:Class="EscuelaGestion.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:vm="clr-namespace:EscuelaGestion.ViewModels"
+        mc:Ignorable="d"
+        Title="Libreta Digital" Height="600" Width="900">
+    <Grid>
+        <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
+            <!-- Pestaña de Alumnos -->
+            <TabItem Header="Alumnos">
+                <TabItem.DataContext>
+                    <vm:AlumnosViewModel/>
+                </TabItem.DataContext>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Nombre:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="150" Text="{Binding NuevoNombre, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                        <TextBlock Text="DNI:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="100" Text="{Binding NuevoDNI, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Curso:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox ItemsSource="{Binding Cursos}" DisplayMemberPath="FullCourseName" SelectedItem="{Binding SelectedCursoForNewAlumno}" Width="150" Margin="0,0,10,0"/>
+                        <Button Content="Agregar" Command="{Binding AgregarCommand}" Width="80" Margin="0,0,10,0"/>
+                        <Button Content="Eliminar" Command="{Binding EliminarCommand}" Width="80" Background="#FFEBB0B0" Margin="0,0,10,0"/>
+                        <Button Content="Guardar" Command="{Binding GuardarCambiosCommand}" Width="80" Background="LightBlue"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Alumnos}" 
+                              SelectedItem="{Binding SelectedAlumno}" 
+                              AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Apellido y Nombre" Binding="{Binding ApellidoNombre}" Width="*"/>
+                            <DataGridTextColumn Header="DNI" Binding="{Binding DNI}" Width="100"/>
+                            <DataGridTextColumn Header="Curso" Binding="{Binding Curso.NombreGrado}" IsReadOnly="True" Width="100"/>
+                            <DataGridTextColumn Header="División" Binding="{Binding Curso.Division}" IsReadOnly="True" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- Pestaña de Calificaciones -->
+            <TabItem Header="Calificaciones">
+                <TabItem.DataContext>
+                    <vm:CalificacionesViewModel/>
+                </TabItem.DataContext>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Curso:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox ItemsSource="{Binding Cursos}" 
+                                  SelectedItem="{Binding SelectedCurso}" 
+                                  DisplayMemberPath="FullCourseName" Width="150" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Text="Trimestre:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox SelectedValue="{Binding TrimestreSeleccionado}" 
+                                  SelectedValuePath="Tag" Width="100">
+                            <ComboBoxItem Content="1° Trimestre">
+                                <ComboBoxItem.Tag>
+                                    <sys:Int32>1</sys:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="2° Trimestre">
+                                <ComboBoxItem.Tag>
+                                    <sys:Int32>2</sys:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="3° Trimestre">
+                                <ComboBoxItem.Tag>
+                                    <sys:Int32>3</sys:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="Final">
+                                <ComboBoxItem.Tag>
+                                    <sys:Int32>4</sys:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" x:Name="dgCalificaciones" ItemsSource="{Binding AlumnosNotas}" 
+                              AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Alumno" Binding="{Binding ApellidoNombre}" IsReadOnly="True" Width="150"/>
+                            <!-- Las columnas de materias se generarán dinámicamente -->
+                            <DataGridTextColumn Header="Inasistencias" Binding="{Binding Asistencias}" Width="80"/>
+                            <DataGridTextColumn Header="Observaciones" Binding="{Binding Observaciones}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button Content="Guardar Cambios" Command="{Binding GuardarCambiosCommand}" Width="120" Margin="0,0,10,0"/>
+                        <Button Content="Generar Planilla Excel" Command="{Binding ExportarExcelCommand}" Width="150" Background="LightGreen"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <!-- Pestaña de Configuración -->
+            <TabItem Header="Configuración">
+                <TabItem.DataContext>
+                    <vm:ConfiguracionViewModel/>
+                </TabItem.DataContext>
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Gestión de Materias -->
+                    <GroupBox Header="Materias" Margin="0,0,5,0">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Text="Nombre:" Margin="0,0,0,2"/>
+                            <TextBox Grid.Row="1" Text="{Binding NuevaMateriaNombre, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
+                            <Button Grid.Row="1" Content="+" Command="{Binding AgregarMateriaCommand}" Width="25" HorizontalAlignment="Right" Margin="0,0,0,5"/>
+
+                            <DataGrid Grid.Row="2" ItemsSource="{Binding Materias}" 
+                                      SelectedItem="{Binding SelectedMateria}" 
+                                      AutoGenerateColumns="False" CanUserAddRows="False"
+                                      HeadersVisibility="None" Margin="0,0,0,5">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            
+                            <Button Grid.Row="3" Content="Eliminar" 
+                                    Command="{Binding EliminarMateriaCommand}" 
+                                    Background="#FFEBB0B0"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Gestión de Cursos -->
+                    <GroupBox Grid.Column="1" Header="Gestión de Grados / Cursos" Margin="5,0,5,0">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="Grado/Año:"/>
+                                    <TextBox Text="{Binding NuevoGradoNombre, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,10,0">
+                                    <TextBlock Text="División:"/>
+                                    <TextBox Text="{Binding NuevaDivision, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                                </StackPanel>
+                                <Button Content="Agregar Curso" Command="{Binding AgregarCursoCommand}" VerticalAlignment="Bottom" Padding="10,2"/>
+                            </StackPanel>
+
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding Cursos}" 
+                                      SelectedItem="{Binding SelectedCurso}"
+                                      AutoGenerateColumns="False" CanUserAddRows="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Grado" Binding="{Binding NombreGrado}" Width="*"/>
+                                    <DataGridTextColumn Header="División" Binding="{Binding Division}" Width="80"/>
+                                    <DataGridTextColumn Header="Año Lectivo" Binding="{Binding AnioLectivo}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            
+                            <Button Grid.Row="2" Content="Eliminar Curso Seleccionado" 
+                                    Command="{Binding EliminarCursoCommand}" 
+                                    Margin="0,5,0,0" Background="#FFEBB0B0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Configuración Global -->
+                    <GroupBox Grid.Column="2" Header="Configuración" Margin="5,0,0,0">
+                        <StackPanel Margin="5">
+                            <TextBlock Text="Año Lectivo Actual:" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding AnioLectivoActual, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                            
+                            <Button Content="Guardar Configuración" Command="{Binding GuardarConfiguracionCommand}" Margin="0,0,0,10"/>
+                            <Button Content="Guardar Cambios de Listas" Command="{Binding GuardarCambiosCommand}" Background="LightBlue" Margin="0,0,0,20"/>
+                            
+                            <TextBlock TextWrapping="Wrap" Foreground="Gray" FontSize="10">
+                                <Run Text="Aquí defines el año escolar activo."/>
+                                <LineBreak/>
+                                <Run Text="Los cursos nuevos usarán este año."/>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
