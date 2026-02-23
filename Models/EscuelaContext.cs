@@ -38,16 +38,10 @@ namespace EscuelaGestion.Models
 
                     if (!Cursos.Any())
                     {
-                        var curso1 = new Curso { NombreGrado = "1° Grado", Division = "A", AnioLectivo = 2024 };
+                        var curso1 = new Curso { NombreGrado = "1° Grado", Division = "A", AnioLectivo = DateTime.Now.Year };
                         Cursos.Add(curso1);
-                        Cursos.Add(new Curso { NombreGrado = "2° Grado", Division = "A", AnioLectivo = 2024 });
+                        Cursos.Add(new Curso { NombreGrado = "2° Grado", Division = "A", AnioLectivo = DateTime.Now.Year });
                         SaveChanges();
-
-                        if (!Alumnos.Any())
-                        {
-                            Alumnos.Add(new Alumno { ApellidoNombre = "Perez, Juan", DNI = "12345678", CursoId = curso1.Id });
-                            SaveChanges();
-                        }
                     }
                     _initialized = true;
                 }

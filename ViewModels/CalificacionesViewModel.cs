@@ -18,6 +18,7 @@ namespace EscuelaGestion.ViewModels
         private List<Materia> _materiasActuales = new();
         private Curso? _selectedCurso;
         private int _trimestreSeleccionado = 1;
+        private bool _isBusy;
 
         public CalificacionesViewModel()
         {
@@ -27,10 +28,12 @@ namespace EscuelaGestion.ViewModels
             RefreshAll();
             
             GuardarCambiosCommand = new RelayCommand(_ => GuardarCambios());
-            ExportarExcelCommand = new RelayCommand(_ => ExportarExcel(), _ => SelectedCurso != null);
+            ExportarExcelCommand = new RelayCommand(async _ => await ExportarExcelAsync(), _ => SelectedCurso != null && !IsBusy);
 
             MessageHub.ConfigurationChanged += () => RefreshAll();
         }
+
+        public List<string> EscalaNotas { get; } = new() { "E", "MB", "B", "S", "NS" };
 
         public void RefreshAll()
         {
@@ -76,6 +79,12 @@ namespace EscuelaGestion.ViewModels
             }
         }
 
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
+
         public ICommand GuardarCambiosCommand { get; }
         public ICommand ExportarExcelCommand { get; }
 
@@ -119,7 +128,7 @@ namespace EscuelaGestion.ViewModels
                     DNI = alu.DNI,
                     Grado = SelectedCurso.NombreGrado,
                     Division = SelectedCurso.Division,
-                    NotasPorMateria = new Dictionary<int, decimal?>(),
+                    NotasPorMateria = new Dictionary<int, string?>(),
                     Asistencias = calificacionesExistentes.FirstOrDefault(c => c.AlumnoId == alu.Id)?.Asistencia,
                     Observaciones = calificacionesExistentes.FirstOrDefault(c => c.AlumnoId == alu.Id)?.Observaciones ?? string.Empty
                 };
@@ -168,7 +177,7 @@ namespace EscuelaGestion.ViewModels
             }
         }
 
-        private void ActualizarOCrearCalificacion(int alumnoId, int materiaId, decimal? nota, int? asistencia, string obs)
+        private void ActualizarOCrearCalificacion(int alumnoId, int materiaId, string? nota, int? asistencia, string obs)
         {
             var cal = _context.Calificaciones.FirstOrDefault(c => 
                 c.AlumnoId == alumnoId && 
@@ -200,7 +209,7 @@ namespace EscuelaGestion.ViewModels
             }
         }
 
-        private void ExportarExcel()
+        private async System.Threading.Tasks.Task ExportarExcelAsync()
         {
             var sfd = new SaveFileDialog
             {
@@ -210,13 +219,26 @@ namespace EscuelaGestion.ViewModels
 
             if (sfd.ShowDialog() == true)
             {
+                IsBusy = true;
                 try
                 {
-                    _excelService.ExportarConPlantilla(AlumnosNotas, MateriasActuales, sfd.FileName);
+                    // Delay artificial para que el usuario vea el mensaje de carga
+                    await System.Threading.Tasks.Task.Delay(1500); 
+                    
+                    await System.Threading.Tasks.Task.Run(() => 
+                    {
+                        _excelService.ExportarConPlantilla(AlumnosNotas, MateriasActuales, sfd.FileName);
+                    });
+
+                    System.Windows.MessageBox.Show("Planilla generada con éxito.", "Éxito");
                 }
                 catch (System.Exception ex)
                 {
                     System.Windows.MessageBox.Show(ex.Message, "Error al exportar");
+                }
+                finally
+                {
+                    IsBusy = false;
                 }
             }
         }

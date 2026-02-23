@@ -66,7 +66,7 @@ namespace EscuelaGestion.Services
                     // Notas dinámicas
                     foreach (var materia in materias)
                     {
-                        if (item.NotasPorMateria.TryGetValue(materia.Id, out decimal? nota))
+                        if (item.NotasPorMateria.TryGetValue(materia.Id, out string? nota))
                         {
                             ws.Cell(row, currentCol).Value = nota;
                         }

@@ -7,7 +7,7 @@ namespace EscuelaGestion.Models
         public int CursoId { get; set; }
         public int MateriaId { get; set; }
         public int Trimestre { get; set; } // 1, 2, 3 o Final
-        public decimal? Nota { get; set; }
+        public string? Nota { get; set; }
         public int? Asistencia { get; set; }
         public string? Observaciones { get; set; }
 

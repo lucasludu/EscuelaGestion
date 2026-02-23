@@ -15,7 +15,7 @@ namespace EscuelaGestion.Models
         public string Division { get; set; } = string.Empty;
         
         // Diccionario para almacenar las notas: <MateriaId, Nota>
-        public Dictionary<int, decimal?> NotasPorMateria { get; set; } = new();
+        public Dictionary<int, string?> NotasPorMateria { get; set; } = new();
 
         public int? Asistencias 
         { 

@@ -88,11 +88,13 @@ namespace EscuelaGestion
             // 2. Generar columnas para cada materia
             foreach (var materia in vm.MateriasActuales)
             {
-                var column = new DataGridTextColumn
+                var column = new DataGridComboBoxColumn
                 {
                     Header = materia.Nombre,
                     // Binding dinámico al diccionario: NotasPorMateria[Id]
-                    Binding = new Binding($"NotasPorMateria[{materia.Id}]"),
+                    SelectedValueBinding = new Binding($"NotasPorMateria[{materia.Id}]") { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged },
+                    // Usar la escala definida en el ViewModel
+                    ItemsSource = vm.EscalaNotas,
                     Width = 80
                 };
                 dgCalificaciones.Columns.Add(column);
