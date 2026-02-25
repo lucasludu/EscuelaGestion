@@ -70,6 +70,7 @@ namespace EscuelaGestion.ViewModels
 
         private void LoadData()
         {
+            _context.ChangeTracker.Clear();
             var oldSelectedCursoId = _selectedCursoForNewAlumno?.Id;
 
             // Cargamos directamente desde la base de datos para ignorar el cache local si hubo cambios externos
@@ -85,7 +86,8 @@ namespace EscuelaGestion.ViewModels
                 SelectedCursoForNewAlumno = Cursos.First();
         }
 
-        private bool CanAgregar() => !string.IsNullOrWhiteSpace(NuevoNombre) && !string.IsNullOrWhiteSpace(NuevoDNI) && SelectedCursoForNewAlumno != null;
+        private bool CanAgregar() => 
+            !string.IsNullOrWhiteSpace(NuevoNombre) && !string.IsNullOrWhiteSpace(NuevoDNI) && SelectedCursoForNewAlumno != null;
 
         private void AgregarAlumno()
         {
@@ -103,6 +105,7 @@ namespace EscuelaGestion.ViewModels
 
             // Recargar la lista para que se muestre el nuevo alumno con su curso
             LoadData();
+            MessageHub.NotifyStudentsChanged();
         }
 
         private void EliminarAlumno()
@@ -112,6 +115,7 @@ namespace EscuelaGestion.ViewModels
                 _context.Alumnos.Remove(SelectedAlumno);
                 _context.SaveChanges();
                 LoadData();
+                MessageHub.NotifyStudentsChanged();
             }
         }
 

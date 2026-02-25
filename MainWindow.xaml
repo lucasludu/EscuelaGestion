@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:vm="clr-namespace:EscuelaGestion.ViewModels"
         mc:Ignorable="d"
-        Title="Libreta Digital" Height="600" Width="900">
+        Title="Libreta Digital" Height="600" Width="1200">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>

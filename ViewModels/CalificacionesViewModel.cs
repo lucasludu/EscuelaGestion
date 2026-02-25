@@ -31,14 +31,17 @@ namespace EscuelaGestion.ViewModels
             ExportarExcelCommand = new RelayCommand(async _ => await ExportarExcelAsync(), _ => SelectedCurso != null && !IsBusy);
 
             MessageHub.ConfigurationChanged += () => RefreshAll();
+            MessageHub.StudentsChanged += () => RefreshAll();
         }
 
         public List<string> EscalaNotas { get; } = new() { "E", "MB", "B", "S", "NS" };
 
         public void RefreshAll()
         {
+            _context.ChangeTracker.Clear();
             LoadMaterias();
             LoadCursos();
+            LoadCalificaciones();
         }
 
         public ObservableCollection<AlumnoNotaDto> AlumnosNotas

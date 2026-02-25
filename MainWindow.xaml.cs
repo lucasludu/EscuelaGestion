@@ -13,6 +13,7 @@ namespace EscuelaGestion
         {
             InitializeComponent();
             Helpers.MessageHub.ConfigurationChanged += MessageHub_ConfigurationChanged;
+            Helpers.MessageHub.StudentsChanged += MessageHub_ConfigurationChanged;
         }
 
         private void MessageHub_ConfigurationChanged()
